@@ -1,0 +1,47 @@
+# Base Image
+FROM python:3.10-slim
+
+# Set environment variables for optimization
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONOPTIMIZE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    FORCE_CMAKE=1 \
+    KMP_DUPLICATE_LIB_OK=TRUE  # Avoid multiple libomp initialization issues
+
+# Set working directory
+WORKDIR /app
+
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libomp-dev \
+    wget \
+    curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    requests \
+    beautifulsoup4 \
+    rich \
+    tiktoken \
+    PyMuPDF \
+    langchain \
+    langchain-community \
+    faiss-cpu && \
+    pip install --no-cache-dir llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+
+# Download model files with error handling and parallel downloads
+RUN curl -o /app/all-MiniLM-L6-v2.F16.gguf -L "https://huggingface.co/prithivida/all-MiniLM-L6-v2-gguf/resolve/main/all-MiniLM-L6-v2-f16.gguf" || \
+    (echo "Failed to download all-MiniLM-L6-v2.F16.gguf" && exit 1) & \
+    curl -o /app/Phi-3.5-mini-instruct-Q4_0_4_4.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_0_4_4.gguf" || \
+    (echo "Failed to download Phi-3.5-mini-instruct-Q4_0_4_4.gguf" && exit 1) && wait
+
+# Remove build dependencies to reduce image size
+RUN apt-get purge -y build-essential && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /root/.cache/pip
+# Set default command to run the application
+CMD ["python", "ragPhi35.py"]
+
