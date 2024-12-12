@@ -2,28 +2,27 @@
 FROM python:3.11.11-slim
 
 # Set environment variables for optimization
+# KMP_DUPLICATE_LIB_OK is set to avoid duplicate dylib issue , for now
 ENV PYTHONUNBUFFERED=1 \
     PYTHONOPTIMIZE=1 \
     PIP_NO_CACHE_DIR=1 \
-    FORCE_CMAKE=1 
-
-# Avoid multiple libomp initialization issues
-ENV KMP_DUPLICATE_LIB_OK=TRUE
+    FORCE_CMAKE=1 \
+    KMP_DUPLICATE_LIB_OK=TRUE
 
 # Set working directory
 WORKDIR /app
 
-RUN python -m pip install --upgrade pip
-# Install necessary system dependencies
+# Upgrade pip and install necessary system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libomp-dev \
     wget \
     curl && \
+    python -m pip install --upgrade pip && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-RUN pip install \
+# Install Python dependencies with prebuilt wheels for faster installation
+RUN pip install --prefer-binary \
     requests \
     beautifulsoup4 \
     rich \
@@ -32,19 +31,20 @@ RUN pip install \
     langchain \
     langchain-community \
     faiss-cpu && \
-    pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+    pip install --prefer-binary llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 
-# Download model files with error handling and parallel downloads
+# Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2.F16.gguf -L "https://huggingface.co/prithivida/all-MiniLM-L6-v2-gguf/resolve/main/all-MiniLM-L6-v2-f16.gguf" || \
-    (echo "Failed to download all-MiniLM-L6-v2.F16.gguf" && exit 1) & \
+    { echo "Failed to download all-MiniLM-L6-v2.F16.gguf" && exit 1; } && \
     curl -o /app/Phi-3.5-mini-instruct-Q4_0_4_4.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_0_4_4.gguf" || \
-    (echo "Failed to download Phi-3.5-mini-instruct-Q4_0_4_4.gguf" && exit 1) && wait
+    { echo "Failed to download Phi-3.5-mini-instruct-Q4_0_4_4.gguf" && exit 1; }
 
 # Remove build dependencies to reduce image size
 RUN apt-get purge -y build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /root/.cache/pip
+    rm -rf /root/.cache/pip /tmp/* /var/tmp/*
+
 # Set default command to run the application
-CMD ["python", "ragPhi35.py"]
+# CMD ["python", "ragPhi35.py"]
 
