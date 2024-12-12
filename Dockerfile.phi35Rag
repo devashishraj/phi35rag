@@ -5,8 +5,10 @@ FROM python:3.10-slim
 ENV PYTHONUNBUFFERED=1 \
     PYTHONOPTIMIZE=1 \
     PIP_NO_CACHE_DIR=1 \
-    FORCE_CMAKE=1 \
-    KMP_DUPLICATE_LIB_OK=TRUE  # Avoid multiple libomp initialization issues
+    FORCE_CMAKE=1 
+
+# Avoid multiple libomp initialization issues
+ENV KMP_DUPLICATE_LIB_OK=TRUE
 
 # Set working directory
 WORKDIR /app
