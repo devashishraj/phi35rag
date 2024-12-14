@@ -1,9 +1,9 @@
 name: build and push multi-architecture Docker img for RAG
 
-# Configures this workflow to run every time a change is pushed to the branch called `main`.
+# Configures this workflow to run every time a change is pushed sepcified branches
 on:
   push:
-    branches: ["main"]
+    branches: ["workflow", "dockerFile"]
 
 env:
   REGISTRY: ghcr.io
