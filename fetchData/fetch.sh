@@ -1,4 +1,4 @@
-# Run the data preparation script
+# Run the data fetch script
 
 echo "getWikiChangesToJson.py"
 python getWikiChangesToJson.py
