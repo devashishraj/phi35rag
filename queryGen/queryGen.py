@@ -27,7 +27,7 @@ def setup_logging():
 
 def generate_queries_from_wikipedia_changes(
     input_file="wikipedia_article_changes.json",
-    output_file="article_queries.json",
+    output_file="ragQueries.json",
     max_queries=3,
 ):
     """
