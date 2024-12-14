@@ -1,5 +1,4 @@
-# load_vectorstore_rag.py
-
+import json
 from langchain_community.vectorstores import FAISS
 from llama_cpp import Llama
 import logging
@@ -14,6 +13,8 @@ logging.basicConfig(
 # Paths
 model_path = "Phi-3.5-mini-instruct-Q4_0_4_4.gguf"
 vectorstore_path = "vectorstore_index.faiss"
+queries_file_path = "queries.json"
+output_file_path = "responses.json"
 
 # Initialize Model
 model = Llama(
@@ -48,9 +49,14 @@ def PhiQnA(question, retriever, hits, maxtokens, model):
     """
     try:
         docs = retriever.invoke(question)
+        if not docs:
+            return "No relevant documents found.", []
 
         # Combine content into a single context string
         context = "\n".join(doc.page_content for doc in docs)
+        if len(context.split()) > model.n_ctx:
+            context = " ".join(context.split()[: model.n_ctx])
+
         template = f"""<|system|>
 You are a Language Model trained to answer questions based on the provided context.
 <|end|>
@@ -85,18 +91,47 @@ Question: {question}
 
 # Main Function to Load Vector Store and Perform RAG
 def main():
-    vectorstore = FAISS.load_local(vectorstore_path)
-    retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": 3})
-
-    question = "Give me a summary based on recent changes in Concurrent Haskell"
     try:
-        response, retrieved_docs = PhiQnA(
-            question, retriever, hits=3, maxtokens=500, model=model
-        )
+        # Load vectorstore
+        vectorstore = FAISS.load_local(vectorstore_path)
+        retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": 3})
 
-        # Print Results
-        console.print(Markdown(f"### Question:\n{question}"))
-        console.print(Markdown(f"### Response:\n{response}"))
+        # Load queries from JSON file
+        with open(queries_file_path, "r") as file:
+            queries = json.load(file)
+
+        if not queries:
+            logging.error("The queries file is empty.")
+            return
+
+        results = []
+
+        for query_obj in queries:
+            question = query_obj.get("query")
+            if not question:
+                logging.warning("Skipping a query without a 'query' field.")
+                continue
+
+            console.print(Markdown(f"### Question:\n{question}"))
+
+            # Perform Q&A
+            response, retrieved_docs = PhiQnA(
+                question, retriever, hits=3, maxtokens=500, model=model
+            )
+
+            # Save the result
+            results.append({"query": question, "response": response})
+
+            # Print Results
+            console.print(Markdown(f"### Response:\n{response}"))
+            console.print("\n" + "=" * 50 + "\n")
+
+        # Write results to JSON file
+        with open(output_file_path, "w") as outfile:
+            json.dump(results, outfile, indent=4)
+
+        logging.info(f"Responses saved to {output_file_path}")
+
     except Exception as e:
         logging.error(f"Error during execution: {e}")
 
