@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 
 # Paths
-embpath = "all-MiniLM-L6-v2.F16.gguf"
+embpath = "/app/all-MiniLM-L6-v2.F16.gguf"
 json_file_path = "wikipedia_article_changes.json"
 vectorstore_path = "vectorstore_index.faiss"
 
