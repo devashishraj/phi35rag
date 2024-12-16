@@ -11,10 +11,10 @@ logging.basicConfig(
 )
 
 # Paths
-model_path = "Phi-3.5-mini-instruct-Q4_0_4_4.gguf"
+model_path = "/app/Phi-3.5-mini-instruct-Q4_0_4_4.gguf"
 vectorstore_path = "vectorstore_index.faiss"
-queries_file_path = "queries.json"
-output_file_path = "responses.json"
+queries_file_path = "ragQueries.json"
+output_file_path = "ragResponses.json"
 
 # Initialize Model
 model = Llama(
