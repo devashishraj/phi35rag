@@ -10,4 +10,4 @@ echo "moving output to ${OUTPUT_DIR}/output3/ to perform retrieval-augmented gen
 mv vectorstore_index.faiss ${INPUT_DIR}/input3/rag/
 
 #moving only next statge folder(s) to output
-mv ${INPUT_DIR}}/input3/rag ${OUTPUT_DIR}/output3/
+mv ${INPUT_DIR}/input3/rag ${OUTPUT_DIR}/output3/
