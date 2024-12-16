@@ -1,7 +1,7 @@
 # Run the query generation script
 
-echo "getWikiChangesToJson.py"
-python queryGen.sh
+echo "queryGen.py"
+python queryGen.py
 
 #move output to sharedDir
 echo "moving output to ${OUTPUT_DIR}/output2 to create vectorDB of data"
