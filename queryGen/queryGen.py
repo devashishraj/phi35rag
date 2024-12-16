@@ -2,22 +2,26 @@ import json
 import random
 import logging
 import sys
+import os
 
 
-def setup_logging():
+def setup_logging(level=logging.INFO):
     """
-    Configure logging to stderr.
+    Configure logging to stderr with a dynamic logging level.
+
+    Args:
+        level (int): Logging level (e.g., logging.INFO, logging.DEBUG).
 
     Returns:
         logging.Logger: Configured logger
     """
     # Create logger
     logger = logging.getLogger("wiki_query_generator")
-    logger.setLevel(logging.INFO)
+    logger.setLevel(level)
 
     # Stderr handler
     stderr_handler = logging.StreamHandler(sys.stderr)
-    stderr_handler.setLevel(logging.INFO)
+    stderr_handler.setLevel(level)
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     stderr_handler.setFormatter(formatter)
     logger.addHandler(stderr_handler)
@@ -29,6 +33,7 @@ def generate_queries_from_wikipedia_changes(
     input_file="wikipedia_article_changes.json",
     output_file="ragQueries.json",
     max_queries=3,
+    query_template="Summarize changes in the {title} Wikipedia article",
 ):
     """
     Generate queries about recent Wikipedia article changes with comprehensive logging.
@@ -37,6 +42,7 @@ def generate_queries_from_wikipedia_changes(
         input_file (str): Path to the input JSON file with Wikipedia changes
         output_file (str): Path to save the output query JSON file
         max_queries (int): Maximum number of queries to generate
+        query_template (str): Template for generating queries
 
     Returns:
         bool: True if successful, False otherwise
@@ -63,8 +69,19 @@ def generate_queries_from_wikipedia_changes(
             return False
 
         # Validate data
+        if not isinstance(articles_data, list):
+            logger.error("Input JSON is not a list")
+            return False
+
+        invalid_articles = [
+            article for article in articles_data if "title" not in article
+        ]
+        if invalid_articles:
+            logger.warning(f"Some articles are missing 'title': {invalid_articles}")
+            articles_data = [article for article in articles_data if "title" in article]
+
         if not articles_data:
-            logger.warning("No articles found in the input file")
+            logger.error("No valid articles with 'title' found in input JSON")
             return False
 
         # Randomly select unique articles
@@ -81,16 +98,22 @@ def generate_queries_from_wikipedia_changes(
         for article in selected_articles:
             query = {
                 "article_title": article["title"],
-                "query": f"Give me summary of {article['title']} wiki article based on recent changes in it",
+                "query": query_template.format(title=article["title"]),
             }
             queries.append(query)
 
-        # Save queries to a new JSON file
+        # Ensure output file exists or create it
         try:
+            if not os.path.exists(output_file):
+                logger.info(f"Output file '{output_file}' does not exist. Creating it.")
+                with open(output_file, "w", encoding="utf-8") as f:
+                    json.dump([], f)  # Create an empty JSON array
+
+            # Save queries to the output JSON file
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(queries, f, ensure_ascii=False, indent=4)
         except IOError as e:
-            logger.error(f"Error writing to output file: {e}")
+            logger.error(f"Error writing to output file: {e}", exc_info=True)
             return False
 
         # Log success details
@@ -102,7 +125,7 @@ def generate_queries_from_wikipedia_changes(
         return True
 
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error(f"Unexpected error: {e}", exc_info=True)
         return False
     finally:
         logger.info("Query generation process completed")
@@ -112,8 +135,13 @@ def main():
     # Run the query generation with logging
     success = generate_queries_from_wikipedia_changes()
 
-    # Set exit code based on success
-    sys.exit(0 if success else 1)
+    # Log and set exit code based on success
+    if success:
+        logging.info("Script completed successfully. Exiting with code 0.")
+        sys.exit(0)
+    else:
+        logging.error("Script encountered errors. Exiting with code 1.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
