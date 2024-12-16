@@ -31,7 +31,7 @@ RUN pip install --prefer-binary \
     langchain \
     langchain-community \
     faiss-cpu && \
-    pip install --prefer-binary llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+    pip install llama-cpp-python --no-binary llama-cpp-python
 
 # Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2.F16.gguf -L "https://huggingface.co/prithivida/all-MiniLM-L6-v2-gguf/resolve/main/all-MiniLM-L6-v2-f16.gguf" || \
