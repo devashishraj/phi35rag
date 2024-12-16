@@ -7,7 +7,7 @@ python dataEmbed.py
 echo "moving output to ${OUTPUT_DIR}/output3/ to perform retrieval-augmented generation"
 
 # moving files to next stage folder
-mv vectorstore_index.faiss ${INPUT_DIR}/input3/rag/
+mv vectorstore_index.faiss ${INPUT_DIR}/input3/output2/rag/
 
 #moving only next statge folder(s) to output
-mv ${INPUT_DIR}/input3/rag ${OUTPUT_DIR}/output3/
+mv ${INPUT_DIR}/input3/output2/rag ${OUTPUT_DIR}/output3/
