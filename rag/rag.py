@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 from langchain_community.vectorstores import FAISS
 from llama_cpp import Llama
 import logging
@@ -10,11 +12,30 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
+def check_file(file_path):
+    # Check if file exists
+    if os.path.exists(file_path):
+        print(f"Model file found: {file_path}")
+
+        # Check file size
+        file_size = os.path.getsize(file_path)
+        print(f"File size: {file_size} bytes")
+    else:
+        print(f"Model file NOT found: {file_path}")
+        print("Please check the file path")
+        sys.exit(1)
+
+
 # Paths
 model_path = "/app/Phi-3.5-mini-instruct-Q4_0_4_4.gguf"
 vectorstore_path = "vectorstore_index.faiss"
 queries_file_path = "ragQueries.json"
 output_file_path = "ragResponses.json"
+
+check_file(model_path)
+check_file(vectorstore_path)
+check_file(queries_file_path)
 
 # Initialize Model
 model = Llama(

@@ -8,16 +8,32 @@ from langchain.schema import Document
 import json
 import os
 import logging
+import sys
 
 # Configure Logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
+def check__file(file_path):
+    # Check if file exists
+    if os.path.exists(file_path):
+        print(f"Model file found: {file_path}")
+    else:
+        print(f"Model file NOT found: {file_path}")
+        print("Please check the file path")
+        sys.exit(1)
+
+
 # Paths
 embpath = "/app/all-MiniLM-L6-v2.F16.gguf"
 json_file_path = "wikipedia_article_changes.json"
 vectorstore_path = "vectorstore_index.faiss"
+
+
+check__file(embpath)
+check__file(json_file_path)
 
 # Initialize Embeddings
 embeddings = LlamaCppEmbeddings(model_path=embpath)
