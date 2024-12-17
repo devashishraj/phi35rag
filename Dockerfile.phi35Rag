@@ -14,15 +14,20 @@ WORKDIR /app
 
 # Upgrade pip and install necessary system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
     build-essential \
     libomp-dev \
+    libgomp1 \
     wget \
     curl && \
     python -m pip install --upgrade pip && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN python3 -m pip install --upgrade pip
+
 # Install Python dependencies with prebuilt wheels for faster installation
-RUN pip install --prefer-binary \
+RUN python3 -m pip install --upgrade pip \
     requests \
     beautifulsoup4 \
     rich \
@@ -30,8 +35,9 @@ RUN pip install --prefer-binary \
     PyMuPDF \
     langchain \
     langchain-community \
-    faiss-cpu && \
-    pip install --prefer-binary llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+    faiss-cpu 
+
+RUN pip install llama-cpp-python  --verbose
 
 # Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2.F16.gguf -L "https://huggingface.co/prithivida/all-MiniLM-L6-v2-gguf/resolve/main/all-MiniLM-L6-v2-f16.gguf" || \
