@@ -1,5 +1,7 @@
 # Run the query generation script
 
+set -e # Exit immediately if any command exits with a non-zero status
+
 echo "queryGen.py"
 python queryGen.py
 

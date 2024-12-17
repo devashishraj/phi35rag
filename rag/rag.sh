@@ -1,5 +1,7 @@
 # Run the data preparation script
 
+set -e # Exit immediately if any command exits with a non-zero status
+
 echo "rag.py"
 python rag.py
 

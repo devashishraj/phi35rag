@@ -1,5 +1,5 @@
 # Run the data embedding script to create vectorStore
-
+set -e # Exit immediately if any command exits with a non-zero status
 echo "dataEmbed.py"
 python dataEmbed.py
 
