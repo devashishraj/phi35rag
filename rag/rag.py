@@ -14,17 +14,19 @@ logging.basicConfig(
 
 
 def check_file(file_path):
-    # Check if file exists
-    if os.path.exists(file_path):
-        print(f"Model file found: {file_path}")
-
-        # Check file size
-        file_size = os.path.getsize(file_path)
-        print(f"File size: {file_size} bytes")
-    else:
-        print(f"Model file NOT found: {file_path}")
-        print("Please check the file path")
+    if not os.path.exists(file_path):
+        print(f"Error: Model file not found at {file_path}", file=sys.stderr)
         sys.exit(1)
+
+    if not os.path.isfile(file_path):
+        print(f"Error: Path exists but is not a file: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    if not os.access(file_path, os.R_OK):
+        print(f"Error: Model file is not readable: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Model file verified successfully: {file_path}")
 
 
 # Paths
