@@ -1,4 +1,5 @@
 # Run the data fetch script
+set -e # Exit immediately if any command exits with a non-zero status
 
 echo "running getWikiChangesToJson.py script to fetch data"
 python getWikiChangesToJson.py
