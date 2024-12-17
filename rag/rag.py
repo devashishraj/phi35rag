@@ -31,12 +31,13 @@ def check_file(file_path):
 
 # Paths
 model_path = "/app/Phi-3.5-mini-instruct-Q4_0_4_4.gguf"
-vectorstore_path = "vectorstore_index.faiss"
+vectorstore_path = (
+    "vectorstore_index.faiss"  # .faiss is not a not a file so don't check this
+)
 queries_file_path = "ragQueries.json"
 output_file_path = "ragResponses.json"
 
 check_file(model_path)
-check_file(vectorstore_path)
 check_file(queries_file_path)
 
 # Initialize Model
