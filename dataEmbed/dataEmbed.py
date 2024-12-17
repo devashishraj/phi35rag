@@ -16,14 +16,20 @@ logging.basicConfig(
 )
 
 
-def check__file(file_path):
-    # Check if file exists
-    if os.path.exists(file_path):
-        print(f"Model file found: {file_path}")
-    else:
-        print(f"Model file NOT found: {file_path}")
-        print("Please check the file path")
+def check_file(file_path):
+    if not os.path.exists(file_path):
+        print(f"Error: Model file not found at {file_path}", file=sys.stderr)
         sys.exit(1)
+
+    if not os.path.isfile(file_path):
+        print(f"Error: Path exists but is not a file: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    if not os.access(file_path, os.R_OK):
+        print(f"Error: Model file is not readable: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Model file verified successfully: {file_path}")
 
 
 # Paths
@@ -32,8 +38,8 @@ json_file_path = "wikipedia_article_changes.json"
 vectorstore_path = "vectorstore_index.faiss"
 
 
-check__file(embpath)
-check__file(json_file_path)
+check_file(embpath)
+check_file(json_file_path)
 
 # Initialize Embeddings
 embeddings = LlamaCppEmbeddings(model_path=embpath)
