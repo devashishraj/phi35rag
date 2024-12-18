@@ -46,12 +46,11 @@ check_file(embpath)
 # Initialize Model
 model = Llama(
     model_path=llm_path,
-    n_gpu_layers=-1,  # Adjust based on your GPU capability
+    # n_gpu_layers=-1,  # Adjust based on your GPU capability
     n_threads=4,
     temperature=0.1,
     top_p=0.5,
-    n_ctx=8192,
-    n_batch=512,
+    n_ctx=5192,
     repeat_penalty=1.4,
     stop=["<|endoftext|>", "<|end|>"],
 )
