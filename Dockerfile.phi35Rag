@@ -42,7 +42,7 @@ RUN pip install llama-cpp-python  --verbose
 # Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2.F16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
     { echo "Failed to download all-MiniLM-L6-v2.F16.gguf" && exit 1; } && \
-    curl -o /app/Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct_Uncensored-GGUF/blob/main/Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf" || \
+    curl -o /app/Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct_Uncensored-GGUF/resolve/main/Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf" || \
     { echo "Failed to download Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf" && exit 1; }
 
 # Remove build dependencies to reduce image size
