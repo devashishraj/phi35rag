@@ -9,4 +9,4 @@ python rag.py
 echo "moving output to ${OUTPUT_DIR}/output4 to store generated response"
 
 #moving only relevant part to next stage
-mv ${INPUT_DIR}/input4/output3/rag/ragResponses.json ${OUTPUT_DIR}/output4/
+mv ragResponses.json ${OUTPUT_DIR}/output4/
