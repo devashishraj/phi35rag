@@ -33,7 +33,11 @@ def generate_queries_from_wikipedia_changes(
     input_file="wikipedia_article_changes.json",
     output_file="ragQueries.json",
     max_queries=3,
-    query_template="Summarize changes in the {title} Wikipedia article",
+    # Fetch the query template
+    query_template=os.getenv(
+        "QUERY_TEMPLATE",
+        "Summarize {title} Wikipedia article based around recent changes in the article",
+    ),
 ):
     """
     Generate queries about recent Wikipedia article changes with comprehensive logging.
