@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.13.1-slim
+FROM python:3.11.11-slim
 
 # Set environment variables for optimization
 ENV PYTHONUNBUFFERED=1 \
