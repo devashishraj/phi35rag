@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.11.11-slim
+FROM ghcr.io/abetlen/llama-cpp-python:v0.3.5
 
 # Set environment variables for optimization
 # KMP_DUPLICATE_LIB_OK is set to avoid duplicate dylib issue , for now
@@ -12,23 +12,24 @@ ENV PYTHONUNBUFFERED=1 \
 # Set working directory
 WORKDIR /app
 
+
 # Upgrade pip and install necessary system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     build-essential \
+    ninja-build \
+    libopenblas-dev \
     libomp-dev \
     libgomp1 \
     wget \
+    git \
     curl && \
-    python -m pip install --upgrade pip && \
+    ln -s /usr/bin/python3 /usr/bin/python && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --upgrade pip
-
 # Install Python dependencies with prebuilt wheels for faster installation
-RUN python3 -m pip install --upgrade pip \
-    requests \
+RUN pip install --upgrade --break-system-packages requests \
     beautifulsoup4 \
     rich \
     tiktoken \
@@ -37,12 +38,12 @@ RUN python3 -m pip install --upgrade pip \
     langchain-community \
     faiss-cpu 
 
-RUN pip install llama-cpp-python  --verbose
+RUN python3 -m pip install --upgrade --break-system-packages pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
 
 # Download model files with robust error handling
-RUN curl -o /app/all-MiniLM-L6-v2.F16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
+RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
     { echo "Failed to download all-MiniLM-L6-v2.F16.gguf" && exit 1; } && \
-    curl -o /app/Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct_Uncensored-GGUF/resolve/main/Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf" || \
+    curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf" && exit 1; }
 
 # Remove build dependencies to reduce image size
