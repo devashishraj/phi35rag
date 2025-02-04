@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     build-essential \
+    ninja-build \
+    libopenblas-dev \
     libomp-dev \
     libgomp1 \
     wget \
@@ -37,6 +39,8 @@ RUN python3 -m pip install --upgrade pip \
     langchain \
     langchain-community \
     faiss-cpu 
+
+RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
 
 RUN pip install llama-cpp-python  --verbose
 
