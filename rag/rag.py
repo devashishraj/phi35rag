@@ -31,8 +31,8 @@ def check_file(file_path):
 
 
 # Paths
-llm_path = "/app/Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf"
-embpath = "/app/all-MiniLM-L6-v2.F16.gguf"
+llm_path = "/app/Phi-3.5-mini-instruct-Q6_K.gguf"
+embpath = "/app/all-MiniLM-L6-v2-ggml-model-f16.gguf"
 vectorstore_path = (
     "vectorstore_index.faiss"  # .faiss is not a not a file so don't check this
 )
