@@ -2,7 +2,6 @@
 FROM python:3.11.11-slim
 
 # Set environment variables for optimization
-# KMP_DUPLICATE_LIB_OK is set to avoid duplicate dylib issue , for now
 ENV PYTHONUNBUFFERED=1 \
     PYTHONOPTIMIZE=1 \
     PIP_NO_CACHE_DIR=1 \
@@ -16,7 +15,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
-    build-essential \
     libomp-dev \
     libgomp1 \
     wget \
@@ -25,10 +23,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python -m pip install --upgrade pip && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --upgrade pip
+# Install build-essential only when needed and remove after use
+RUN apt-get update && apt-get install -y build-essential && \
+    python3 -m pip install llama-cpp-python --verbose && \
+    apt-get purge -y build-essential && \
+    apt-get autoremove -y && \
+    apt-get clean -y
 
-# Install Python dependencies with prebuilt wheels for faster installation
-RUN python3 -m pip install --upgrade pip \
+# Install Python dependencies with prebuilt wheels
+RUN python3 -m pip install \
     requests \
     beautifulsoup4 \
     rich \
@@ -38,17 +41,11 @@ RUN python3 -m pip install --upgrade pip \
     langchain-community \
     faiss-cpu 
 
-RUN python3 -m pip install llama-cpp-python --verbose
-
 # Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
     { echo "Failed to download all-MiniLM-L6-v2.F16.gguf" && exit 1; } && \
     curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf" && exit 1; }
 
-# Remove build dependencies to reduce image size
-RUN apt-get purge -y build-essential && \
-    apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf /root/.cache/pip /tmp/* /var/tmp/*
-
+# Final cleanup
+RUN rm -rf /root/.cache/pip /tmp/* /var/tmp/*
