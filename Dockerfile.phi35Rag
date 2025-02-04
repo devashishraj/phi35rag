@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.11.11-slim
+FROM nvidia/cuda:12.8.0-base-ubuntu24.04
 
 # Set environment variables for optimization
 # KMP_DUPLICATE_LIB_OK is set to avoid duplicate dylib issue , for now
@@ -11,6 +11,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 # Set working directory
 WORKDIR /app
+
 
 # Upgrade pip and install necessary system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -24,7 +25,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
     curl && \
-    python -m pip install --upgrade pip && \
+    ln -s /usr/bin/python3 /usr/bin/python && \
+    python3 -m pip install --upgrade pip && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install --upgrade pip
@@ -42,7 +44,7 @@ RUN python3 -m pip install --upgrade pip \
 
 RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
 
-RUN pip install llama-cpp-python  --verbose
+RUN python3 -m pip install llama-cpp-python  --verbose
 
 # Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
