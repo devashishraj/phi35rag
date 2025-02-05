@@ -1,5 +1,5 @@
 # Base Image
-FROM ghcr.io/abetlen/llama-cpp-python:v0.3.5
+FROM nvidia/cuda:12.8.0-base-ubuntu24.04
 
 # Set environment variables for optimization
 # KMP_DUPLICATE_LIB_OK is set to avoid duplicate dylib issue , for now
@@ -7,18 +7,23 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONOPTIMIZE=1 \
     PIP_NO_CACHE_DIR=1 \
     FORCE_CMAKE=1 \
-    KMP_DUPLICATE_LIB_OK=TRUE
+    KMP_DUPLICATE_LIB_OK=TRUE \
+    CC=clang \
+    CXX=clang++
 
-# Set working directory
-WORKDIR /app
-
-
-# Upgrade pip and install necessary system dependencies
+# why clang : https://github.com/ggerganov/llama.cpp/issues/11428
+# Install Clang and related packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    clang \
+    lld \
+    clang-format \
+    llvm \
+    libomp-dev \
     python3 \
     python3-pip \
     build-essential \
     ninja-build \
+    libclblast-dev \
     libopenblas-dev \
     libomp-dev \
     libgomp1 \
@@ -28,8 +33,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ln -s /usr/bin/python3 /usr/bin/python && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+
+# RUN python3 -m pip install --force-reinstall --upgrade --break-system-packages llama-cpp-python  --verbose
+
+RUN pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+
+
 # Install Python dependencies with prebuilt wheels for faster installation
-RUN pip install --no-cache-dir --force-reinstall --upgrade --break-system-packages requests \
+RUN pip install --force-reinstall --upgrade --break-system-packages requests \
     beautifulsoup4 \
     rich \
     tiktoken \
@@ -38,7 +49,8 @@ RUN pip install --no-cache-dir --force-reinstall --upgrade --break-system-packag
     langchain-community \
     faiss-cpu 
 
-RUN python3 -m pip install --no-cache-dir --force-reinstall --upgrade --break-system-packages pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
+# Set working directory
+WORKDIR /app
 
 # Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
@@ -46,12 +58,15 @@ RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co
     curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download llm model" && exit 1; }
 
-    # Remove build dependencies to reduce image size
-RUN apt-get purge -y build-essential && \
+
+# Remove Clang, LLVM, and other build tools to reduce image size
+RUN apt-get purge -y clang lld llvm build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /root/.cache/pip /tmp/* /var/tmp/*
 
-# Set default command to run the application
-# CMD ["python", "ragPhi35.py"]
+# Unset CC and CXX since Clang is no longer available
+ENV CC="" \
+    CXX=""
+
 
