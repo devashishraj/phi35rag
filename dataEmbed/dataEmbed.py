@@ -33,7 +33,7 @@ def check_file(file_path):
 
 
 # Paths
-embpath = "/app/all-MiniLM-L6-v2.F16.gguf"
+embpath = "/app/all-MiniLM-L6-v2-ggml-model-f16.gguf"
 json_file_path = "wikipedia_article_changes.json"
 vectorstore_path = "vectorstore_index.faiss"
 
