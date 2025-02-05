@@ -44,16 +44,12 @@ check_file(queries_file_path)
 check_file(embpath)
 
 # Initialize Model
-model = Llama(
-    model_path=llm_path,
-    # n_gpu_layers=-1,  # Adjust based on your GPU capability
-    n_threads=4,
-    temperature=0.1,
-    top_p=0.5,
-    n_ctx=5192,
-    repeat_penalty=1.4,
-    stop=["<|endoftext|>", "<|end|>"],
-)
+model = Llama(model_path=llm_path, 
+                  n_gpu_layers=-1,
+                  n_threads=8, 
+                  n_ctx=12000, 
+                  verbose=True
+                  )
 
 embeddings = LlamaCppEmbeddings(model_path=embpath)
 
@@ -89,29 +85,31 @@ def PhiQnA(question, retriever, hits, maxtokens, model):
         if len(context.split()) > max_ctx_length:
             context = " ".join(context.split()[:max_ctx_length])
 
-        template = f"""<|system|>
-You are a Language Model trained to answer questions based on the provided context.
+        prompt = f"""
+<|system|>
+Your objective is to provide a well-structured, concise summary of the Wikipedia article.
+Consider historical context, significance, and key aspects. If recent changes are meaningful,
+incorporate them into your summary.
 <|end|>
 
 <|user|>
 Answer the question based only on the following context:
-
-[Context]
 {context}
-[End of Context]
-
 Question: {question}
 <|end|>
+
 <|assistant|>
 """
         # Generate response
         with console.status("[bold green]Generating response..."):
             output = model.create_completion(
-                prompt=template,
-                max_tokens=maxtokens,
-                stop=["<|end|>"],
-                temperature=0.1,
-            )
+            prompt=prompt,
+            max_tokens=4200,
+            stop=["<|end|>"],
+            frequency_penalty=0.1,
+            presence_penalty=0.3,
+            temperature=0.4,
+        )
 
         response = output["choices"][0]["text"].strip()
         return response, docs
