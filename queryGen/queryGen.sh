@@ -1,14 +1,34 @@
-# Run the query generation script
+#!/bin/bash
+set -euo pipefail  # Exit on error, treat unset variables as errors, and fail on pipeline errors
 
-set -e # Exit immediately if any command exits with a non-zero status
+# Logging function for error messages
+log_error() {
+    echo "[ERROR] $1" >&2
+    exit 1
+}
 
-echo "queryGen.py"
-python queryGen.py
 
-#move output to sharedDir
-echo "moving output to ${OUTPUT_DIR}/output2 to create vectorDB of data"
+echo "Running the query generation script"
+if ! python queryGen.py; then
+    log_error " queryGen.py failed to execute. Please check the script and inputs."
+fi
 
-mv wikipedia_article_changes.json ${INPUT_DIR}/input2/output1/dataEmbed/
+echo "checking required directories exist"
+if [[ ! -d ${INPUT_DIR}/input2/output1/dataEmbed/ ]]; then
+    log_error "Directory ${INPUT_DIR}/input2/output1/dataEmbed/ does not exist."
+fi
+
+if [[ ! -d ${INPUT_DIR}/input2/output1/rag/ ]]; then
+    log_error "Directory ${INPUT_DIR}/input2/output1/rag/ does not exist."
+fi
+
+if [[ ! -d  ${OUTPUT_DIR}/output2/ ]]; then
+    log_error "Directory  ${OUTPUT_DIR}/output2/ does not exist."
+fi
+
+echo "moving output to next step"
+
+mv wikipedia_article_changes.json ${INPUT_DIR}/input2/output1/dataEmbed/ 
 mv ragQueries.json ${INPUT_DIR}/input2/output1/rag/
 
 #moving only relevant part to next stage
