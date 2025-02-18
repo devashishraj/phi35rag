@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import LlamaCppEmbeddings
 from llama_cpp import Llama
 import logging
 from rich.console import Console
@@ -30,28 +31,28 @@ def check_file(file_path):
 
 
 # Paths
-model_path = "/app/Phi-3.5-mini-instruct-Q4_0_4_4.gguf"
+llm_path = "/app/Phi-3.5-mini-instruct-Q6_K.gguf"
+embpath = "/app/all-MiniLM-L6-v2-ggml-model-f16.gguf"
 vectorstore_path = (
     "vectorstore_index.faiss"  # .faiss is not a not a file so don't check this
 )
 queries_file_path = "ragQueries.json"
 output_file_path = "ragResponses.json"
 
-check_file(model_path)
+check_file(llm_path)
 check_file(queries_file_path)
+check_file(embpath)
 
 # Initialize Model
-model = Llama(
-    model_path=model_path,
-    n_gpu_layers=1,  # Adjust based on your GPU capability
-    n_threads=8,
-    temperature=0.1,
-    top_p=0.5,
-    n_ctx=8192,
-    repeat_penalty=1.4,
-    stop=["<|endoftext|>", "<|end|>"],
-    verbose=False,
-)
+model = Llama(model_path=llm_path, 
+                  n_gpu_layers=-1,
+                  n_threads=8, 
+                  n_ctx=12000, 
+                  verbose=True
+                  )
+
+embeddings = LlamaCppEmbeddings(model_path=embpath)
+
 
 console = Console(width=90)
 
@@ -78,32 +79,37 @@ def PhiQnA(question, retriever, hits, maxtokens, model):
 
         # Combine content into a single context string
         context = "\n".join(doc.page_content for doc in docs)
-        if len(context.split()) > model.n_ctx:
-            context = " ".join(context.split()[: model.n_ctx])
 
-        template = f"""<|system|>
-You are a Language Model trained to answer questions based on the provided context.
+        # Check and truncate context length based on n_ctx
+        max_ctx_length = model.n_ctx if isinstance(model.n_ctx, int) else model.n_ctx()
+        if len(context.split()) > max_ctx_length:
+            context = " ".join(context.split()[:max_ctx_length])
+
+        prompt = f"""
+<|system|>
+Your objective is to provide a well-structured, concise summary of the Wikipedia article.
+Consider historical context, significance, and key aspects. If recent changes are meaningful,
+incorporate them into your summary.
 <|end|>
 
 <|user|>
 Answer the question based only on the following context:
-
-[Context]
 {context}
-[End of Context]
-
 Question: {question}
 <|end|>
+
 <|assistant|>
 """
         # Generate response
         with console.status("[bold green]Generating response..."):
             output = model.create_completion(
-                prompt=template,
-                max_tokens=maxtokens,
-                stop=["<|end|>"],
-                temperature=0.1,
-            )
+            prompt=prompt,
+            max_tokens=4200,
+            stop=["<|end|>"],
+            frequency_penalty=0.1,
+            presence_penalty=0.3,
+            temperature=0.4,
+        )
 
         response = output["choices"][0]["text"].strip()
         return response, docs
@@ -117,7 +123,9 @@ Question: {question}
 def main():
     try:
         # Load vectorstore
-        vectorstore = FAISS.load_local(vectorstore_path)
+        vectorstore = FAISS.load_local(
+            vectorstore_path, embeddings, allow_dangerous_deserialization=True
+        )
         retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": 3})
 
         # Load queries from JSON file
