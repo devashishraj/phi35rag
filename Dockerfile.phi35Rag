@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # RUN python3 -m pip install --force-reinstall --upgrade --break-system-packages llama-cpp-python  --verbose
 
-RUN pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+RUN pip install  --verbose --break-system-packages llama-cpp-python 
 
 
 # Install Python dependencies with prebuilt wheels for faster installation

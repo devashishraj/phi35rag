@@ -51,7 +51,7 @@ llm = Llama(model_path=llm_path,
                   verbose=True
                   )
 
-embeddings = LlamaCppEmbeddings(model_path=embpath)
+embeddings = LlamaCppEmbeddings(model_path=embpath,verbose=True)
 
 
 console = Console(width=90)
