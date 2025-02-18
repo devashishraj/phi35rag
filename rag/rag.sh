@@ -1,12 +1,24 @@
-# Run the data preparation script
+#!/bin/bash
+set -euo pipefail  # Exit on error, treat unset variables as errors, and fail on pipeline errors
 
-set -e # Exit immediately if any command exits with a non-zero status
+# Logging function for error messages
+log_error() {
+    echo "[ERROR] $1" >&2
+    exit 1
+}
 
-echo "rag.py"
-python rag.py
+echo "# Running the rag.py"
+if ! python rag.py; then
+    log_error "rag.py failed to execute. Please check the script and inputs."
+fi
 
-#move output to sharedDir
-echo "moving output to ${OUTPUT_DIR}/output4 to store generated response"
+echo "checking required directories exist"
+if [[ ! -d ${OUTPUT_DIR}/output4/ ]]; then
+    log_error "Directory ${INPUT_DIR}/input3/output2/rag/ does not exist."
+fi
+
+
+echo "moving output to next step"
 
 #moving only relevant part to next stage
 mv ${INPUT_DIR}}/input4/output3/rag/ragResponses.json ${OUTPUT_DIR}/output4/
