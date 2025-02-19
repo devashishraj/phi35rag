@@ -1,6 +1,11 @@
 # Base Image
 FROM nvidia/cuda:12.8.0-base-ubuntu24.04
 
+
+# Preserve original values of CC and CXX
+ENV ORIGINAL_CC=$CC \
+    ORIGINAL_CXX=$CXX
+
 # Set environment variables for optimization
 # KMP_DUPLICATE_LIB_OK is set to avoid duplicate dylib issue , for now
 ENV PYTHONUNBUFFERED=1 \
@@ -22,6 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     build-essential \
+    libjpeg-dev \
+    zlib1g-dev \
+    python3-dev \
     ninja-build \
     libclblast-dev \
     libopenblas-dev \
@@ -29,14 +37,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     wget \
     git \
-    curl && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    curl 
 
 
 # RUN python3 -m pip install --force-reinstall --upgrade --break-system-packages llama-cpp-python  --verbose
 
-RUN pip install  --verbose --break-system-packages llama-cpp-python 
+RUN pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125
 
 
 # Install Python dependencies with prebuilt wheels for faster installation
@@ -46,16 +52,21 @@ RUN pip install --force-reinstall --upgrade --break-system-packages requests \
     tiktoken \
     PyMuPDF \
     langchain \
-    langchain-community \
-    faiss-cpu 
+    langchain-community 
 
-# Set working directory
-WORKDIR /app
+RUN pip install --force-reinstall --upgrade --break-system-packages  huggingface-hub \
+    sentence-transformers
+
+# Create a directory to save the model
+RUN mkdir -p /app/miniLM6V2
+
+# Add a Python script that downloads the model
+COPY saveModels.py saveModels.py
+
+RUN python3 saveModels.py
 
 # Download model files with robust error handling
-RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
-    { echo "Failed to download Embedding model" && exit 1; } && \
-    curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
+RUN curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download llm model" && exit 1; }
 
 
@@ -65,8 +76,6 @@ RUN apt-get purge -y clang lld llvm build-essential && \
     apt-get clean -y && \
     rm -rf /root/.cache/pip /tmp/* /var/tmp/*
 
-# Unset CC and CXX since Clang is no longer available
-ENV CC="" \
-    CXX=""
-
-
+# Restore original values of CC and CXX (if needed)
+ENV CC=$ORIGINAL_CC \
+    CXX=$ORIGINAL_CXX
