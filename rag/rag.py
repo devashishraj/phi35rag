@@ -44,21 +44,21 @@ check_file(queries_file_path)
 check_file(embpath)
 
 # Initialize Model
-model = Llama(model_path=llm_path, 
+llm = Llama(model_path=llm_path, 
                   n_gpu_layers=-1,
                   n_threads=8, 
                   n_ctx=12000, 
                   verbose=True
                   )
 
-embeddings = LlamaCppEmbeddings(model_path=embpath)
+embeddings = LlamaCppEmbeddings(model_path=embpath,verbose=True)
 
 
 console = Console(width=90)
 
 
 # Q&A Function
-def PhiQnA(question, retriever, hits, maxtokens, model):
+def PhiQnA(question, retriever):
     """
     Perform Q&A based on the context retrieved from the vectorstore.
 
@@ -80,10 +80,10 @@ def PhiQnA(question, retriever, hits, maxtokens, model):
         # Combine content into a single context string
         context = "\n".join(doc.page_content for doc in docs)
 
-        # Check and truncate context length based on n_ctx
-        max_ctx_length = model.n_ctx if isinstance(model.n_ctx, int) else model.n_ctx()
-        if len(context.split()) > max_ctx_length:
-            context = " ".join(context.split()[:max_ctx_length])
+        # # Check and truncate context length based on n_ctx
+        # max_ctx_length = llm.n_ctx if isinstance(llm.n_ctx, int) else llm.n_ctx()
+        # if len(context.split()) > max_ctx_length:
+        #     context = " ".join(context.split()[:max_ctx_length])
 
         prompt = f"""
 <|system|>
@@ -102,14 +102,16 @@ Question: {question}
 """
         # Generate response
         with console.status("[bold green]Generating response..."):
-            output = model.create_completion(
+            output = llm.create_completion(
             prompt=prompt,
             max_tokens=4200,
             stop=["<|end|>"],
-            frequency_penalty=0.1,
-            presence_penalty=0.3,
             temperature=0.4,
         )
+            
+        # Debugging Log   
+        logging.info(f"Raw model output: {output}")
+        
 
         response = output["choices"][0]["text"].strip()
         return response, docs
@@ -148,7 +150,7 @@ def main():
 
             # Perform Q&A
             response, retrieved_docs = PhiQnA(
-                question, retriever, hits=3, maxtokens=500, model=model
+                question, retriever
             )
 
             # Save the result

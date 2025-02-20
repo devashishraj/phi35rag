@@ -33,10 +33,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS="-march=native" -DCMAKE_C_FLAGS="-march=native" -DGGML_CPU_ARM_ARCH=native" \
  pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125
 
- # for required packages
+# for required packages
 COPY requirements.txt requirements.txt
 
 RUN pip install --no-cache-dir --upgrade  --break-system-packages -r requirements.txt
+
 
 # Create a directory to save the model
 RUN mkdir -p /app/jinv3
@@ -54,7 +55,7 @@ RUN curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bart
 RUN apt-get purge -y clang lld llvm build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /root/.cache/* /tmp/* /var/tmp/*
+    rm -rf /root/.cache /tmp/* /var/tmp/*
 
 
 
