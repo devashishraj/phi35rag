@@ -44,6 +44,8 @@ RUN mkdir -p /app/jinv3
 # Add a Python script that downloads the model
 COPY saveModels.py saveModels.py
 
+RUN python3 saveModels.py
+
 # Download model files with robust error handling
 RUN curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download llm model" && exit 1; }
@@ -52,7 +54,7 @@ RUN curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bart
 RUN apt-get purge -y clang lld llvm build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /root/.cache/pip /tmp/* /var/tmp/*
+    rm -rf /root/.cache/* /tmp/* /var/tmp/*
 
 
 
