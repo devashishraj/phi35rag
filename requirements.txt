@@ -1,0 +1,15 @@
+torch
+einops
+faiss-cpu
+langchain
+langchain_community
+langchain_huggingface
+sentence_transformers
+bs4
+rich
+#tiktoken needed in order to for TokenTextSplitter
+tiktoken 
+
+
+
+

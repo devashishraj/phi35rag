@@ -9,3 +9,6 @@
 TODO:
 
 - [ ] add ENV variable that can used in step 1 what category of articles to fetch
+
+
+---
