@@ -34,11 +34,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # RUN python3 -m pip install --force-reinstall --upgrade --break-system-packages llama-cpp-python  --verbose
 
 RUN pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+=======
+=======
+>>>>>>> Stashed changes
 
+# install llama cpp's python bindings
+RUN CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS="-march=native" -DCMAKE_C_FLAGS="-march=native" -DGGML_CPU_ARM_ARCH=native" pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125
+>>>>>>> Stashed changes
 
+# list of required packages
+COPY requirements.txt requirements.txt
+
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # Install Python dependencies with prebuilt wheels for faster installation
 RUN pip install --force-reinstall --upgrade --break-system-packages requests \
     beautifulsoup4 \
@@ -51,6 +64,20 @@ RUN pip install --force-reinstall --upgrade --break-system-packages requests \
 
 # Set working directory
 WORKDIR /app
+=======
+=======
+>>>>>>> Stashed changes
+# Install required packages
+RUN pip install --no-cache-dir --upgrade  --break-system-packages -r requirements.txt
+
+# Create a directory to save the model
+RUN mkdir -p /app/jinv3
+
+# Add a Python script that downloads the model
+COPY saveModels.py saveModels.py
+
+RUN python3 saveModels.py
+>>>>>>> Stashed changes
 
 # Download model files with robust error handling
 RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf" || \
@@ -63,10 +90,13 @@ RUN curl -o /app/all-MiniLM-L6-v2-ggml-model-f16.gguf -L "https://huggingface.co
 RUN apt-get purge -y clang lld llvm build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /root/.cache/pip /tmp/* /var/tmp/*
+    rm -rf /root/.cache/* /tmp/* /var/tmp/*
+<<<<<<< Updated upstream
 
 # Unset CC and CXX since Clang is no longer available
 ENV CC="" \
     CXX=""
 
+=======
+>>>>>>> Stashed changes
 
