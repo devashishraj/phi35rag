@@ -7,12 +7,6 @@ log_error() {
     exit 1
 }
 
-
-echo "Running the query generation script"
-if ! python queryGen.py; then
-    log_error " queryGen.py failed to execute. Please check the script and inputs."
-fi
-
 echo "checking required directories exist"
 if [[ ! -d ${INPUT_DIR}/input2/output1/dataEmbed/ ]]; then
     log_error "Directory ${INPUT_DIR}/input2/output1/dataEmbed/ does not exist."
@@ -25,6 +19,13 @@ fi
 if [[ ! -d  ${OUTPUT_DIR}/output2/ ]]; then
     log_error "Directory  ${OUTPUT_DIR}/output2/ does not exist."
 fi
+
+
+echo "Running the query generation script"
+if ! python queryGen.py; then
+    log_error " queryGen.py failed to execute. Please check the script and inputs."
+fi
+
 
 echo "moving output to next step"
 

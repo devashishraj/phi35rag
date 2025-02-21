@@ -7,11 +7,6 @@ log_error() {
     exit 1
 }
 
-echo "# Running the dataEmbed.py"
-if ! python dataEmbed.py; then
-    log_error " dataEmbed.py failed to execute. Please check the script and inputs."
-fi
-
 echo "checking required directories exist"
 if [[ ! -d ${INPUT_DIR}/input3/output2/rag/ ]]; then
     log_error "Directory ${INPUT_DIR}/input3/output2/rag/ does not exist."
@@ -19,6 +14,11 @@ fi
 
 if [[ ! -d ${OUTPUT_DIR}/output3/ ]]; then
     log_error "Directory ${OUTPUT_DIR}/output3/ does not exist."
+fi
+
+echo "# Running the dataEmbed.py"
+if ! python dataEmbed.py; then
+    log_error " dataEmbed.py failed to execute. Please check the script and inputs."
 fi
 
 echo "moving output to next step"
