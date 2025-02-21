@@ -4,6 +4,7 @@ name: build and push multi-architecture Docker img for RAG
 on:
   push:
     branches: ["workflow", "dockerFile"]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
