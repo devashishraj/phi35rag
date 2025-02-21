@@ -7,15 +7,15 @@ log_error() {
     exit 1
 }
 
-echo "# Running the rag.py"
-if ! python rag.py; then
-    log_error "rag.py failed to execute. Please check the script and inputs."
-fi
-
-
 echo "checking required directories exist"
 if [[ ! -d ${OUTPUT_DIR}/output4/ ]]; then
     log_error "Directory ${OUTPUT_DIR}/output4/ does not exist."
+fi
+
+
+echo "# Running the rag.py"
+if ! python rag.py; then
+    log_error "rag.py failed to execute. Please check the script and inputs."
 fi
 
 echo "moving output to next step"
