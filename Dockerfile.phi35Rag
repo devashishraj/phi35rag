@@ -29,24 +29,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl 
 
 
-RUN CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS="-march=native" -DCMAKE_C_FLAGS="-march=native" -DGGML_CPU_ARM_ARCH=native" pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125
+# install llama cpp's python bindings
+RUN CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS="-march=native" -DCMAKE_C_FLAGS="-march=native" -DGGML_CPU_ARM_ARCH=native" \
+ pip install  --verbose --break-system-packages llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125
 
+# for required packages
+COPY requirements.txt requirements.txt
 
-# Install required packages
-RUN pip install --force-reinstall --upgrade --break-system-packages requests \
-    beautifulsoup4 \
-    rich \
-    tiktoken \
-    PyMuPDF \
-    langchain \
-    langchain-community 
+RUN pip install --debug --verbose --no-cache-dir --upgrade  --break-system-packages -r requirements.txt
 
-# required packages for loading embedding model
-RUN pip install --force-reinstall --upgrade --break-system-packages  huggingface-hub \
-    sentence-transformers
 
 # Create a directory to save the model
-RUN mkdir -p /app/miniLM6V2
+RUN mkdir -p /app/jinv3
 
 # Add a Python script that downloads the model
 COPY saveModels.py saveModels.py
@@ -57,10 +51,12 @@ RUN python3 saveModels.py
 RUN curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download llm model" && exit 1; }
 
-
 # Remove Clang, LLVM, and other build tools to reduce image size
 RUN apt-get purge -y clang lld llvm build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /root/.cache/pip /tmp/* /var/tmp/*
+    rm -rf /root/.cache /tmp/* /var/tmp/*
+
+
+
 
