@@ -31,14 +31,7 @@ def setup_logging(level=logging.INFO):
     return logger
 
 
-def generate_queries_from_wikipedia_changes(
-    max_queries=3,
-    # Fetch the query template
-    query_template=os.getenv(
-        "QUERY_TEMPLATE",
-        "Summarize {title} Wikipedia article based around recent changes in the article",
-    ),
-):
+def generate_queries_from_wikipedia_changes():
     """
     Generate queries about recent Wikipedia article changes with comprehensive logging.
 
@@ -59,7 +52,6 @@ def generate_queries_from_wikipedia_changes(
         logger.info(f"Starting query generation process")
         logger.info(f"Input file: {input_file}")
         logger.info(f"Output file: {output_file}")
-        logger.info(f"Max queries: {max_queries}")
 
         # Validate input file
         try:
@@ -88,24 +80,40 @@ def generate_queries_from_wikipedia_changes(
             logger.error("No valid articles with 'title' found in input JSON")
             return False
 
-        # Randomly select unique articles
-        try:
-            selected_articles = random.sample(
-                articles_data, min(max_queries, len(articles_data))
-            )
-        except ValueError as e:
-            logger.error(f"Error selecting articles: {e}")
-            return False
-
         # Generate queries
-        queries = []
-        for article in selected_articles:
-            query = {
-                "article_title": article["title"],
-                "query": query_template.format(title=article["title"]),
-            }
-            queries.append(query)
+        updated_articles = []
+        try:
+            for article in articles_data:
+                if "title" in article:
 
+                    title=article["title"]
+                    article_id=article["article_id"]
+
+                    embQuery_template=f"""
+                Go through the given context.
+                Your objective is to provide a well-structured and accurate summary.
+                Consider historical context, significance, and key aspects. 
+                Given context might have recent changes section; if they are meaningful, incorporate them into your summary. 
+                Your responses should be strictly from the context provided nothing else.
+                Do not mention that it's a summary, and also do not mention anything about instructions given to you.
+                """
+
+                oneShotQuery_template=f"""
+                i am giving you an article on {title}
+                Your objective is to provide a well-structured, concise summary of it.
+                Consider historical context, significance, and key aspects. 
+                Given context might have recent changes section, if are meaningful, incorporate them into your summary . 
+                Your responses should be strictly from the context provided nothing else.
+                Do not mention that it's a summary and also do not mention anything about instructions given to you
+                """
+
+                article["embPrompt"] = embQuery_template.format()
+                article["oneShotPrompt"]=oneShotQuery_template.format()
+                updated_articles.append(article)
+        except Exception as e:
+            logger.error(f"Unexpected error while generating queries: {e}", exc_info=True)
+            exit(1)
+            
         # Ensure output file exists or create it
         try:
             if not os.path.exists(output_file):
@@ -115,17 +123,13 @@ def generate_queries_from_wikipedia_changes(
 
             # Save queries to the output JSON file
             with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(queries, f, ensure_ascii=False, indent=4)
+                json.dump(updated_articles, f, ensure_ascii=False, indent=4)
         except IOError as e:
             logger.error(f"Error writing to output file: {e}", exc_info=True)
             return False
 
         # Log success details
-        logger.info(f"Successfully generated {len(queries)} queries")
         logger.info("Generated queries:")
-        for q in queries:
-            logger.info(f"- {q['query']}")
-
         return True
 
     except Exception as e:
