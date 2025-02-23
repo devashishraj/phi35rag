@@ -12,8 +12,8 @@ if [[ ! -d ${INPUT_DIR}/input2/output1/dataEmbed/ ]]; then
     log_error "Directory ${INPUT_DIR}/input2/output1/dataEmbed/ does not exist."
 fi
 
-if [[ ! -d ${INPUT_DIR}/input2/output1/rag/ ]]; then
-    log_error "Directory ${INPUT_DIR}/input2/output1/rag/ does not exist."
+if [[ ! -d ${INPUT_DIR}/input2/output1/embRag/ ]]; then
+    log_error "Directory ${INPUT_DIR}/input2/output1/embRag/ does not exist."
 fi
 
 if [[ ! -d  ${OUTPUT_DIR}/output2/ ]]; then
@@ -30,8 +30,8 @@ fi
 echo "moving output to next step"
 
 cp WikiRC_Q.json ${INPUT_DIR}/input2/output1/dataEmbed/ 
-mv WikiRC_Q.json ${INPUT_DIR}/input2/output1/rag/
+mv WikiRC_Q.json ${INPUT_DIR}/input2/output1/embRag/
 
 #moving only relevant part to next stage
 mv ${INPUT_DIR}/input2/output1/dataEmbed ${OUTPUT_DIR}/output2/
-mv ${INPUT_DIR}/input2/output1/rag ${OUTPUT_DIR}/output2/
+mv ${INPUT_DIR}/input2/output1/embRag ${OUTPUT_DIR}/output2/
