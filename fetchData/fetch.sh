@@ -7,6 +7,10 @@ log_error() {
     exit 1
 }
 
+# checks if an environment variable is set and assigns a default value if it's not:
+if [ -z "${Fetch_OUTPUT}" ]; then
+    Fetch_OUTPUT="WikiRC.json"
+
 echo "checking required directories exist"
 
 # Ensure the next step directories exist
@@ -26,7 +30,7 @@ if ! python getWikiChangesToJson.py; then
 fi
 
 
-mv wikipedia_article_changes.json ${INPUT_DIR}/input1/phi35ragRepo/queryGen/ 
+mv $Fetch_OUTPUT ${INPUT_DIR}/input1/phi35ragRepo/queryGen/ 
 
 #move output to sharedDir
 echo "moving output to next step"
