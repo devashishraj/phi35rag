@@ -1,8 +1,29 @@
 import requests
 import json
+import hashlib
+import os
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 
+
+outputPath=os.getenv("Fetch_OUTPUT")
+
+def hash_to_sha512_string(article):
+    """
+    Generates a 10-character hash from a given string.
+
+    Args:
+        input_string: The string to hash.
+
+    Returns:
+        A 10-character hexadecimal hash string, or None if input is not a string.
+    """
+    if not isinstance(article, str):
+        return None  # Handle non-string input
+
+    hash_object = hashlib.sha512(article.encode())
+    hex_digest = hash_object.hexdigest()
+    return hex_digest[:10]  # Return the first 10 characters
 
 def fetch_wikipedia_articles_by_category(category, limit=10):
     """
@@ -106,11 +127,11 @@ def format_diff(diff_html):
     simplified_diff = []
 
     if additions:
-        simplified_diff.append(f"Added: {', '.join(additions[:5])}...")  # Limit output
+        simplified_diff.append(f"Added: {', '.join(additions[:])}...") 
     if deletions:
         simplified_diff.append(
-            f"Removed: {', '.join(deletions[:5])}..."
-        )  # Limit output
+            f"Removed: {', '.join(deletions[:])}..."
+        ) 
 
     return "\n".join(simplified_diff) if simplified_diff else None
 
@@ -177,8 +198,8 @@ def get_recent_changes_within_24hrs(page_title, cutoff_time):
 
 def main():
     category = "Programming languages"
-    limit = 100
-    cutoff_time = datetime.now(tz=timezone.utc) - timedelta(hours=96)
+    limit = 200
+    cutoff_time = datetime.now(tz=timezone.utc) - timedelta(hours=24)
 
     dataset = []
 
@@ -192,19 +213,15 @@ def main():
         print("\nFetching recent changes (within 24 hours) for these articles...")
         for article in articles:
             changes = get_recent_changes_within_24hrs(article, cutoff_time)
-
+            articleID=hash_to_sha512_string(article)
+            # articleID = hash(article)
             # Only add articles with changes to the dataset
             if changes:
                 article_text = fetch_article_text(article)  # Fetch the article content
 
                 article_data = {
-                    "article_id": hash(
-                        article
-                    ),  # Unique identifier based on article title
+                    "article_id": articleID,  # Unique identifier based on article title
                     "title": article,
-                    "latest_revision_timestamp": datetime.now(
-                        tz=timezone.utc
-                    ).isoformat(),
                     "content": {
                         "sections": [
                             {
@@ -221,9 +238,9 @@ def main():
 
         # Save the dataset as JSON
         if dataset:  # Only save if there are articles with changes
-            with open("wikipedia_article_changes.json", "w") as f:
+            with open(outputPath, "w") as f:
                 json.dump(dataset, f, ensure_ascii=False, indent=4)
-            print("Dataset saved to 'wikipedia_article_changes.json'.")
+            print("articles with recent changes saved")
         else:
             print("No recent changes found. Dataset not created.")
 
