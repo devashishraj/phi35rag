@@ -8,8 +8,8 @@ log_error() {
 }
 
 echo "checking required directories exist"
-if [[ ! -d ${INPUT_DIR}/input3/output2/rag/ ]]; then
-    log_error "Directory ${INPUT_DIR}/input3/output2/rag/ does not exist."
+if [[ ! -d ${INPUT_DIR}/input3/output2/embRag/ ]]; then
+    log_error "Directory ${INPUT_DIR}/input3/output2/embRag/ does not exist."
 fi
 
 if [[ ! -d ${OUTPUT_DIR}/output3/ ]]; then
@@ -24,7 +24,7 @@ fi
 echo "moving output to next step"
 
 # moving files to next stage folder
-mv vectorstore_index.faiss ${INPUT_DIR}/input3/output2/rag/
+mv vectorstore_index.faiss ${INPUT_DIR}/input3/output2/embRag/
 
 #moving only next statge folder(s) to output
-mv ${INPUT_DIR}/input3/output2/rag ${OUTPUT_DIR}/output3/
+mv ${INPUT_DIR}/input3/output2/embRag ${OUTPUT_DIR}/output3/
