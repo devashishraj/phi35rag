@@ -21,4 +21,4 @@ fi
 echo "moving output to next step"
 
 #moving only relevant part to next stage
-mv ragResponses.json ${OUTPUT_DIR}/output4/
+mv WikiRC_ES.json ${OUTPUT_DIR}/output4/

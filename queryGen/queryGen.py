@@ -4,6 +4,8 @@ import logging
 import sys
 import os
 
+input_file="WikiRC.json"
+output_file="WikiRC_Q.json"
 
 def setup_logging(level=logging.INFO):
     """
@@ -30,8 +32,6 @@ def setup_logging(level=logging.INFO):
 
 
 def generate_queries_from_wikipedia_changes(
-    input_file="wikipedia_article_changes.json",
-    output_file="ragQueries.json",
     max_queries=3,
     # Fetch the query template
     query_template=os.getenv(

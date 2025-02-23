@@ -14,34 +14,38 @@ logging.basicConfig(
 )
 
 
-def check_file(file_path):
-    if not os.path.exists(file_path):
-        print(f"Error: Model file not found at {file_path}", file=sys.stderr)
+def check_path(path):
+    if not os.path.exists(path):
+        print(f"Error: Path not found at {path}", file=sys.stderr)
         sys.exit(1)
 
-    if not os.path.isfile(file_path):
-        print(f"Error: Path exists but is not a file: {file_path}", file=sys.stderr)
+    if not (os.path.isfile(path) or os.path.isdir(path)):
+        print(f"Error: Path exists but is neither a file nor a directory: {path}", file=sys.stderr)
         sys.exit(1)
 
-    if not os.access(file_path, os.R_OK):
-        print(f"Error: Model file is not readable: {file_path}", file=sys.stderr)
+    if not os.access(path, os.R_OK):
+        print(f"Error: Path is not readable: {path}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"Model file verified successfully: {file_path}")
+    path_type = "File" if os.path.isfile(path) else "Directory"
+    print(f"{path_type} verified successfully: {path}")
+
 
 
 # Paths
 llm_path = "/app/Phi-3.5-mini-instruct-Q6_K.gguf"
-embpath = "/app/all-MiniLM-L6-v2-ggml-model-f16.gguf"
+embpath = "app/jinv3"
+
 vectorstore_path = (
     "vectorstore_index.faiss"  # .faiss is not a not a file so don't check this
 )
-queries_file_path = "ragQueries.json"
-output_file_path = "ragResponses.json"
 
-check_file(llm_path)
-check_file(queries_file_path)
-check_file(embpath)
+queries_file_path = "WikiRC_Q.json"
+output_file_path = "WikiRC_ES.json"
+
+check_path(llm_path)
+check_path(queries_file_path)
+check_path(embpath)
 
 # Initialize Model
 llm = Llama(model_path=llm_path, 
