@@ -2,13 +2,14 @@
 
 from langchain.text_splitter import TokenTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import LlamaCppEmbeddings
-from llama_cpp import Llama
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.schema import Document
+import torch
 import json
 import os
 import logging
 import sys
+
 
 # Configure Logging
 logging.basicConfig(
@@ -16,34 +17,57 @@ logging.basicConfig(
 )
 
 
-def check_file(file_path):
-    if not os.path.exists(file_path):
-        print(f"Error: Model file not found at {file_path}", file=sys.stderr)
+def check_path(path):
+    if not os.path.exists(path):
+        print(f"Error: Path not found at {path}", file=sys.stderr)
         sys.exit(1)
 
-    if not os.path.isfile(file_path):
-        print(f"Error: Path exists but is not a file: {file_path}", file=sys.stderr)
+    if not (os.path.isfile(path) or os.path.isdir(path)):
+        print(f"Error: Path exists but is neither a file nor a directory: {path}", file=sys.stderr)
         sys.exit(1)
 
-    if not os.access(file_path, os.R_OK):
-        print(f"Error: Model file is not readable: {file_path}", file=sys.stderr)
+    if not os.access(path, os.R_OK):
+        print(f"Error: Path is not readable: {path}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"Model file verified successfully: {file_path}")
+    path_type = "File" if os.path.isfile(path) else "Directory"
+    print(f"{path_type} verified successfully: {path}")
 
 
 # Paths
-embpath = "/app/all-MiniLM-L6-v2-ggml-model-f16.gguf"
-json_file_path = "wikipedia_article_changes.json"
+embpath = "app/jinv3"
+rawData_path = "WikiRC_Q.json"
 vectorstore_path = "vectorstore_index.faiss"
 
 
-check_file(embpath)
-check_file(json_file_path)
+check_path(embpath)
+check_path(rawData_path)
+
+CONST_cuda="cuda"
+CONST_mps="mps"
+
+def set_device():
+    if torch.cuda.is_available():
+        device = torch.device(CONST_cuda)
+        print("CUDA available")
+    elif torch.backends.mps.is_available():
+        device = torch.device(CONST_mps)
+        print("MPS available")
+    else:
+        device = torch.device("cpu")
+        print("Only CPU available")
+    return device
+
+# Set the device
+deviceDetected = set_device()
+# NOTE:change device to CPU in case of ram <=16GB.
+emb_model_kwargs = {"device": deviceDetected,
+                        "local_files_only":True,
+                        "trust_remote_code":True,
+                    } 
 
 # Initialize Embeddings
-embeddings = LlamaCppEmbeddings(model_path=embpath)
-
+embeddings = HuggingFaceEmbeddings(model_name=embpath,model_kwargs=emb_model_kwargs)
 
 # Function to parse JSON input
 def parse_json(file_path):
@@ -72,9 +96,9 @@ def parse_json(file_path):
                     diff = change.get("diff", "")
                     documents.append(
                         {
-                            "article_id": article_id,
                             "title": title,
                             "section_title": section_title,
+                            "article_id": article_id,
                             "text": text,
                             "change_summary": change_summary,
                             "diff": diff,
@@ -91,21 +115,23 @@ def parse_json(file_path):
 def preprocess_documents(documents):
     processed_docs = []
     for doc in documents:
+        articleID = str(doc['article_id'])
         content = (
             f"Article Title: {doc['title']}\n"
+            f"ArticleID:{doc['article_id']}\n"
             f"Section Title: {doc['section_title']}\n"
             f"Change Summary: {doc['change_summary']}\n"
             f"Diff: {doc['diff']}\n\n"
             f"Full Text: {doc['text']}\n"
         )
-        processed_docs.append(Document(page_content=content, metadata={}))
+        processed_docs.append(Document(page_content=content, metadata={"articleID":articleID}))
     return processed_docs
 
 
 # Main Function to Create and Save Vector Store
 def main():
-    documents = preprocess_documents(parse_json(json_file_path))
-    text_splitter = TokenTextSplitter(chunk_size=300, chunk_overlap=50)
+    documents = preprocess_documents(parse_json(rawData_path))
+    text_splitter = TokenTextSplitter(chunk_size=1500, chunk_overlap=50)
     texts = text_splitter.split_documents(documents)
 
     # Create and save vector store
