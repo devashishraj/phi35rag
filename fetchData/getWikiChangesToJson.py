@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 
 
-outputPath=os.getenv("Fetch_OUTPUT")
+outputPath="WikiRC.json"
 
 def hash_to_sha512_string(article):
     """
