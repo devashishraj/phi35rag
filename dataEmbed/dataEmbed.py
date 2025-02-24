@@ -35,7 +35,7 @@ def check_path(path):
 
 
 # Paths
-embpath = "app/jinv3"
+embpath = "/app/jinv3"
 rawData_path = "WikiRC_Q.json"
 vectorstore_path = "vectorstore_index.faiss"
 
