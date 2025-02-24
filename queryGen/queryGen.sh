@@ -22,7 +22,7 @@ fi
 
 
 echo "Running the query generation script"
-if ! python queryGen.py; then
+if ! python3 queryGen.py; then
     log_error " queryGen.py failed to execute. Please check the script and inputs."
 fi
 

@@ -14,7 +14,7 @@ fi
 
 
 echo "# Running the rag.py"
-if ! python embRag.py; then
+if ! python3 embRag.py; then
     log_error "rag.py failed to execute. Please check the script and inputs."
 fi
 
