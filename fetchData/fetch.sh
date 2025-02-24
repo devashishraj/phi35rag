@@ -22,7 +22,7 @@ fi
 
 # Run the data preparation script
 echo "running getWikiChangesToJson.py script to fetch data"
-if ! python getWikiChangesToJson.py; then
+if ! python3 getWikiChangesToJson.py; then
     log_error "getWikiChangesToJson.py failed to execute. Please check the script and inputs."
 fi
 

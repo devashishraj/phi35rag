@@ -17,7 +17,7 @@ if [[ ! -d ${OUTPUT_DIR}/output3/ ]]; then
 fi
 
 echo "# Running the dataEmbed.py"
-if ! python dataEmbed.py; then
+if ! python3 dataEmbed.py; then
     log_error " dataEmbed.py failed to execute. Please check the script and inputs."
 fi
 
