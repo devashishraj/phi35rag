@@ -23,7 +23,7 @@ def check_path(path):
 # Paths
 embpath = "/app/jinv3"
 modelCachePath = "/app/jinv3/modelCache"
-json_file_path = "WikiRC.json"
+json_file_path = "WikiRC_Q.json"
 check_path(embpath)
 check_path(json_file_path)
 
