@@ -37,7 +37,7 @@ def check_path(path):
 # Paths
 llm_path = "/app/Phi-3.5-mini-instruct-Q6_K.gguf"
 embpath = "/app/jinv3"
-modelCachePath="app/jinv3/modelCache"
+modelCachePath="/app/jinv3/modelCache"
 
 vectorstore_path = (
     "vectorstore_index.faiss"  # .faiss is not a not a file so don't check this
