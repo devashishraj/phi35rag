@@ -46,7 +46,7 @@ def set_device():
 deviceDetected = set_device()
 emb_model_kwargs = {"device": deviceDetected, "local_files_only": True, "trust_remote_code": True}
 
-saveVectorStoreTo = "app/vectorstore_index.faiss"
+saveVectorStoreTo = "vectorstore_index.faiss"
 
 # Initialize Embeddings
 embeddings = HuggingFaceEmbeddings(model_name=embpath, model_kwargs=emb_model_kwargs, cache_folder=modelCachePath)
