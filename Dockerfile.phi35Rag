@@ -35,7 +35,7 @@ RUN CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS="-march=native" -DCMAKE_C_FL
 
 # for required packages
 COPY requirements.txt requirements.txt
-
+# NOTE:Run any python scripts after install all required packages
 RUN pip install --debug --verbose --no-cache-dir --upgrade  --break-system-packages -r requirements.txt
 
 
