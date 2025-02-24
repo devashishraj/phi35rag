@@ -36,6 +36,7 @@ def check_path(path):
 
 # Paths
 embpath = "/app/jinv3"
+modelCachePath="/app/jinv3/modelCache"
 rawData_path = "WikiRC_Q.json"
 vectorstore_path = "vectorstore_index.faiss"
 
@@ -67,8 +68,7 @@ emb_model_kwargs = {"device": deviceDetected,
                     } 
 
 # Initialize Embeddings
-embeddings = HuggingFaceEmbeddings(model_name=embpath,model_kwargs=emb_model_kwargs)
-
+embeddings = HuggingFaceEmbeddings(model_name=embpath,model_kwargs=emb_model_kwargs,cache_folder=modelCachePath)
 # Function to parse JSON input
 def parse_json(file_path):
     try:

@@ -37,6 +37,7 @@ def check_path(path):
 # Paths
 llm_path = "/app/Phi-3.5-mini-instruct-Q6_K.gguf"
 embpath = "/app/jinv3"
+modelCachePath="app/jinv3/modelCache"
 
 vectorstore_path = (
     "vectorstore_index.faiss"  # .faiss is not a not a file so don't check this
@@ -149,7 +150,7 @@ def main():
     # Initialize embeddings Model
     try:
         global embeddings
-        embeddings = HuggingFaceEmbeddings(model_name=embpath)
+        embeddings = HuggingFaceEmbeddings(model_name=embpath,cache_folder=modelCachePath)
     except Exception as e:
         logging.error(f"Failed to initialize embeddings: {e}")
     
