@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libomp-dev libjpeg-dev zlib1g-dev python3-dev \
     ninja-build libclblast-dev libopenblas-dev \
     wget git curl && \
-    python3 -m pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages pip setuptools && \
-    pip3 install --debug --no-cache-dir --verbose --break-system-packages \
+    pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages pip setuptools && \
+    pip install --debug --no-cache-dir --verbose --break-system-packages \
     llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125 && \
     apt-get purge -y build-essential && \
     apt-get autoremove -y && \
@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy and install Python dependencies
 COPY requirements.txt requirements.txt
-RUN pip3 install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt
+RUN pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt
 
 # Create model directory and download model
 RUN mkdir -p /app/jinv3/modelCache
