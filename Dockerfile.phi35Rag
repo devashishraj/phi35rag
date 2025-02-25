@@ -51,6 +51,9 @@ RUN python3 saveModels.py
 RUN curl -o /app/Phi-3.5-mini-instruct-Q6_K.gguf -L "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download llm model" && exit 1; }
 
+
+RUN pip3 install --debug --verbose --no-cache-dir --upgrade  --break-system-packages torch  --index-url https://download.pytorch.org/whl/cu126
+
 # Remove Clang, LLVM, and other build tools to reduce image size
 RUN apt-get purge -y clang lld llvm build-essential && \
     apt-get autoremove -y && \
