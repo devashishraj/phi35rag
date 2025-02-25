@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libomp-dev libjpeg-dev zlib1g-dev python3-dev \
     ninja-build libclblast-dev libopenblas-dev \
     wget git curl && \
-    pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages pip setuptools && \
     pip install --debug --no-cache-dir --verbose --break-system-packages \
     llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125 && \
     apt-get purge -y build-essential && \
