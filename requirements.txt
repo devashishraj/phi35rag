@@ -1,5 +1,3 @@
-# cuda supported torch to be installed manually via --index-url https://download.pytorch.org/whl/cu126
-torch
 einops
 faiss-cpu
 langchain
@@ -10,7 +8,8 @@ bs4
 rich
 #tiktoken needed in order to for TokenTextSplitter
 tiktoken 
-
+- https://download.pytorch.org/whl/cu126
+torch
 
 
 
