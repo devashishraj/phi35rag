@@ -7,7 +7,6 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     FORCE_CMAKE=1 \
     KMP_DUPLICATE_LIB_OK=TRUE \
-    PIP_EXTRA_INDEX_URL=https://abetlen.github.io/llama-cpp-python/whl/cuda125 \
     PIP_INDEX_URL=https://pypi.org/simple \
     PIP_PYPI_URL=https://pypi.org/simple
 
@@ -23,8 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ninja-build libclblast-dev libopenblas-dev \
     wget git curl && \
     CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS='-march=native' -DCMAKE_C_FLAGS='-march=native' -DGGML_CPU_ARM_ARCH=native" pip install --debug --no-cache-dir --verbose --break-system-packages \
-    llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125 && \
-    pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt --index-url https://pypi.org/simple && \
+    --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125 llama-cpp-python && \
+    pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages --index-url https://pypi.org/simple -r requirements.txt && \
     apt-get purge -y build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
