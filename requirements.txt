@@ -1,4 +1,4 @@
-# cuda supported torch to be installed manually via --index-url https://download.pytorch.org/whl/cu126
+-i https://pypi.org/simple
 faiss-cpu
 langchain
 langchain_community
