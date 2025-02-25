@@ -8,6 +8,8 @@ ENV PYTHONUNBUFFERED=1 \
     FORCE_CMAKE=1 \
     KMP_DUPLICATE_LIB_OK=TRUE \
     CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS='-march=native' -DCMAKE_C_FLAGS='-march=native' -DGGML_CPU_ARM_ARCH=native"
+# Copy and install Python dependencies
+COPY requirements.txt requirements.txt
 
 # Install dependencies and immediately clean up to reduce image size
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -18,14 +20,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget git curl && \
     pip install --debug --no-cache-dir --verbose --break-system-packages \
     llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125 && \
+    pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt && \
     apt-get purge -y build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /root/.cache /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
-# Copy and install Python dependencies
-COPY requirements.txt requirements.txt
-RUN pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt
+
+# RUN pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt
 
 # Create model directory and download model
 RUN mkdir -p /app/jinv3/modelCache
@@ -37,4 +39,3 @@ RUN python3 saveModels.py && \
     "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf" || \
     { echo "Failed to download LLM model" && exit 1; }
 
-# Ensure PyTorch is installed via requirements.txt and avoid redundant installs
