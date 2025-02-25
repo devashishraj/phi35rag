@@ -23,7 +23,13 @@ RUN CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS='-march=native' -DCMAKE_C_FL
 
 # Copy and install dependencies
 COPY requirements.txt requirements.txt
+<<<<<<< Updated upstream
 RUN pip install --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt
+=======
+# NOTE:Run any python scripts after install all required packages
+RUN pip3 install --debug --verbose --no-cache-dir --upgrade  --break-system-packages -r requirements.txt
+
+>>>>>>> Stashed changes
 
 # Create a directory to save the model
 RUN mkdir -p /app/jinv3/modelCache
