@@ -8,8 +8,7 @@ bs4
 rich
 #tiktoken needed in order to for TokenTextSplitter
 tiktoken 
-- https://download.pytorch.org/whl/cu126
-torch
+
 
 
 
