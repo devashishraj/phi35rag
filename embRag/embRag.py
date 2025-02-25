@@ -60,8 +60,9 @@ def initialize_model(model_path):
     try:
         model = Llama(
             model_path=model_path,
+            n_gpu_layers=-1,
             n_threads=6,
-            n_ctx=12000,
+            n_ctx=14000,
             verbose=True,
         )
         logging.info("Model initialized successfully")
