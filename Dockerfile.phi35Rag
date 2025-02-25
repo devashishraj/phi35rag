@@ -31,17 +31,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
     curl && \
-    CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS='-march=native' -DCMAKE_C_FLAGS='-march=native' -DGGML_CPU_ARM_ARCH=native" pip install --debug --no-cache-dir --verbose --break-system-packages \
+    pip3 install --debug --no-cache-dir --verbose --break-system-packages --index-url https://download.pytorch.org/whl/cu126 torch && \
+    CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS='-march=native' -DCMAKE_C_FLAGS='-march=native' -DGGML_CPU_ARM_ARCH=native" pip3 install --debug --no-cache-dir --verbose --break-system-packages \
     --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125 llama-cpp-python && \
-    pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages --index-url https://pypi.org/simple -r requirements.txt && \
-    pip install --debug --no-cache-dir --verbose --break-system-packages --extra-index-url https://download.pytorch.org/whl/cu126 torch && \
+    pip3 install --debug --no-cache-dir --verbose --upgrade --break-system-packages --index-url https://pypi.org/simple -r requirements.txt && \
     apt-get purge -y build-essential && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /root/.cache /tmp/* /var/tmp/* /var/lib/apt/lists/*
-
-
-# RUN pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt
 
 # Create model directory and download model
 RUN mkdir -p /app/jinv3/modelCache
