@@ -6,8 +6,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONOPTIMIZE=1 \
     PIP_NO_CACHE_DIR=1 \
     FORCE_CMAKE=1 \
-    KMP_DUPLICATE_LIB_OK=TRUE \
-    CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS='-march=native' -DCMAKE_C_FLAGS='-march=native' -DGGML_CPU_ARM_ARCH=native"
+    KMP_DUPLICATE_LIB_OK=TRUE 
 # Copy and install Python dependencies
 COPY requirements.txt requirements.txt
 
@@ -18,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libomp-dev libjpeg-dev zlib1g-dev python3-dev \
     ninja-build libclblast-dev libopenblas-dev \
     wget git curl && \
-    pip install --debug --no-cache-dir --verbose --break-system-packages \
+    CMAKE_ARGS="-DGGML_NATIVE=OFF -DCMAKE_CXX_FLAGS='-march=native' -DCMAKE_C_FLAGS='-march=native' -DGGML_CPU_ARM_ARCH=native" pip install --debug --no-cache-dir --verbose --break-system-packages \
     llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cuda125 && \
     pip install --debug --no-cache-dir --verbose --upgrade --break-system-packages -r requirements.txt && \
     apt-get purge -y build-essential && \
