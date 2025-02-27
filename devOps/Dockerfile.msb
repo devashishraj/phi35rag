@@ -24,8 +24,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     update-alternatives --config python3 && \
     CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=all-major" \
     pip3 install --debug --no-cache-dir --break-system-packages llama-cpp-python && \
-    pip freeze | grep -v -E "llama_cpp_python|diskcache|jinja2|numpy|typing-extensions|wheel" | \ 
-    xargs pip uninstall --verbose --break-system-packages -y 2>/dev/null || true && \
     apt-get purge -y build-essential ninja-build python3-dev && \
     apt-get autoremove -y && \
     apt-get clean -y && \
