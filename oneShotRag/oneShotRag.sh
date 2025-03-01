@@ -13,9 +13,9 @@ if [[ ! -d ${OUTPUT_DIR}/output5/ ]]; then
 fi
 
 
-echo "# Running the rag.py"
+echo "# Running the oneShotRag.py"
 if ! python3 oneShotRag.py; then
-    log_error "rag.py failed to execute. Please check the script and inputs."
+    log_error "oneShotRag failed to execute. Please check the script and inputs."
 fi
 
 echo "moving output to next step"

@@ -21,5 +21,5 @@ fi
 echo "moving output to next step"
 
 #moving only relevant part to next stage
-mv WikiRC_ES.json ${OUTPUT_DIR}/output4/
+mv WikiRC_ES.json ${INPUT_DIR}/input4/output3/oneShotRag/
 mv ${INPUT_DIR}/input4/output3/oneShotRag ${OUTPUT_DIR}/output4/
