@@ -37,6 +37,6 @@ mv ${INPUT_DIR}/input1/phi35ragRepo/queryGen ${OUTPUT_DIR}/output1/
 mv ${INPUT_DIR}/input1/phi35ragRepo/dataEmbed ${OUTPUT_DIR}/output1/ 
 mv ${INPUT_DIR}/input1/phi35ragRepo/embRag ${OUTPUT_DIR}/output1/
 mv ${INPUT_DIR}/input1/phi35ragRepo/oneShotRag ${OUTPUT_DIR}/output1/
-
+mv ${INPUT_DIR}/input1/phi35ragRepo/factScore  ${OUTPUT_DIR}/output1/
 # Final message
 echo "Script completed successfully"

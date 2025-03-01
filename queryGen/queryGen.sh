@@ -36,3 +36,4 @@ mv WikiRC_Q.json ${INPUT_DIR}/input2/output1/embRag/
 mv ${INPUT_DIR}/input2/output1/dataEmbed ${OUTPUT_DIR}/output2/
 mv ${INPUT_DIR}/input2/output1/embRag ${OUTPUT_DIR}/output2/
 mv ${INPUT_DIR}/input2/output1/oneShotRag ${OUTPUT_DIR}/output2/
+mv ${INPUT_DIR}/input2/output1/factScore ${OUTPUT_DIR}/output2/
