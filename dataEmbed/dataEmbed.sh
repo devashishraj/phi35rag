@@ -28,3 +28,4 @@ mv vectorstore_index.faiss ${INPUT_DIR}/input3/output2/embRag/
 
 #moving only next statge folder(s) to output
 mv ${INPUT_DIR}/input3/output2/embRag ${OUTPUT_DIR}/output3/
+mv ${INPUT_DIR}/input3/output2/oneShotRag ${OUTPUT_DIR}/output3/
