@@ -13,13 +13,13 @@ if [[ ! -d ${OUTPUT_DIR}/output4/ ]]; then
 fi
 
 
-echo "# Running the rag.py"
+echo "# Running the embRag.py"
 if ! python3 embRag.py; then
-    log_error "rag.py failed to execute. Please check the script and inputs."
+    log_error "embRag.py failed to execute. Please check the script and inputs."
 fi
 
 echo "moving output to next step"
 
 #moving only relevant part to next stage
-mv WikiRC_ES.json ${OUTPUT_DIR}/output4/
+mv WikiRC_ES.json ${INPUT_DIR}/input4/output3/oneShotRag/
 mv ${INPUT_DIR}/input4/output3/oneShotRag ${OUTPUT_DIR}/output4/
