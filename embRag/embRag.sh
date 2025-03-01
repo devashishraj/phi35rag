@@ -13,9 +13,9 @@ if [[ ! -d ${OUTPUT_DIR}/output4/ ]]; then
 fi
 
 
-echo "# Running the rag.py"
+echo "# Running the embRag.py"
 if ! python3 embRag.py; then
-    log_error "rag.py failed to execute. Please check the script and inputs."
+    log_error "embRag.py failed to execute. Please check the script and inputs."
 fi
 
 echo "moving output to next step"
