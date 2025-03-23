@@ -20,6 +20,10 @@ fi
 
 echo "moving output to next step"
 
-#moving only relevant part to next stage
-mv WikiRC_ESO.json ${OUTPUT_DIR}/output6/
+
+mv WikiRC_ESO.json ${OUTPUT_DIR}/output6/smryCmp/
 mv factScore.json ${OUTPUT_DIR}/output6/
+
+#moving only relevant part to next stage
+
+find ${INPUT_DIR}/input6/output5/ -mindepth 1 -maxdepth 1 ! -name 'factScore' -exec mv {} ${OUTPUT_DIR}/output6/ \;

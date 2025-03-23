@@ -27,6 +27,8 @@ echo "moving output to next step"
 mv vectorstore_index.faiss ${INPUT_DIR}/input3/output2/embRag/
 
 #moving only next statge folder(s) to output
-mv ${INPUT_DIR}/input3/output2/embRag ${OUTPUT_DIR}/output3/
-mv ${INPUT_DIR}/input3/output2/oneShotRag ${OUTPUT_DIR}/output3/
-mv ${INPUT_DIR}/input3/output2/factScore ${OUTPUT_DIR}/output3/
+# mv ${INPUT_DIR}/input3/output2/embRag ${OUTPUT_DIR}/output3/
+# mv ${INPUT_DIR}/input3/output2/oneShotRag ${OUTPUT_DIR}/output3/
+# mv ${INPUT_DIR}/input3/output2/factScore ${OUTPUT_DIR}/output3/
+
+find ${INPUT_DIR}/input3/output2/ -mindepth 1 -maxdepth 1 ! -name 'dataEmbed' -exec mv {} ${OUTPUT_DIR}/output3/ \;
