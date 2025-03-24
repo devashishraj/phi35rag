@@ -32,10 +32,4 @@ echo "moving output to next step"
 cp WikiRC_Q.json ${INPUT_DIR}/input2/output1/dataEmbed/ 
 mv WikiRC_Q.json ${INPUT_DIR}/input2/output1/embRag/
 
-#moving only relevant part to next stage
-# mv ${INPUT_DIR}/input2/output1/dataEmbed ${OUTPUT_DIR}/output2/
-# mv ${INPUT_DIR}/input2/output1/embRag ${OUTPUT_DIR}/output2/
-# mv ${INPUT_DIR}/input2/output1/oneShotRag ${OUTPUT_DIR}/output2/
-# mv ${INPUT_DIR}/input2/output1/factScore ${OUTPUT_DIR}/output2/
-
 find ${INPUT_DIR}/input2/output1/ -mindepth 1 -maxdepth 1 ! -name 'queryGen' -exec mv {} ${OUTPUT_DIR}/output2/ \;

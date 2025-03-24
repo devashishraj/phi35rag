@@ -22,7 +22,4 @@ mv WikiRC_ES.json ${INPUT_DIR}/input4/output3/oneShotRag/
 
 echo "moving output to next step"
 
-#moving only relevant part to next stage
-# mv ${INPUT_DIR}/input4/output3/oneShotRag ${OUTPUT_DIR}/output4/
-# mv ${INPUT_DIR}/input4/output3/factScore ${OUTPUT_DIR}/output4/
 find ${INPUT_DIR}/input4/output3/ -mindepth 1 -maxdepth 1 ! -name 'embRag' -exec mv {} ${OUTPUT_DIR}/output4/ \;

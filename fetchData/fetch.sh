@@ -32,14 +32,6 @@ mv WikiRC.json ${INPUT_DIR}/input1/phi35ragRepo/queryGen/
 #move output to sharedDir
 echo "moving output to next step"
 
-#moving only relevant part to next stage
-# mv ${INPUT_DIR}/input1/phi35ragRepo/queryGen ${OUTPUT_DIR}/output1/ 
-# mv ${INPUT_DIR}/input1/phi35ragRepo/dataEmbed ${OUTPUT_DIR}/output1/ 
-# mv ${INPUT_DIR}/input1/phi35ragRepo/embRag ${OUTPUT_DIR}/output1/
-# mv ${INPUT_DIR}/input1/phi35ragRepo/oneShotRag ${OUTPUT_DIR}/output1/
-# mv ${INPUT_DIR}/input1/phi35ragRepo/factScore  ${OUTPUT_DIR}/output1/
-# mv ${INPUT_DIR}/input1/phi35ragRepo/smryCmp  ${OUTPUT_DIR}/output1/
-
 # experimental cmd
 find ${INPUT_DIR}/input1/phi35ragRepo/ -mindepth 1 -maxdepth 1 ! -name 'fetchData' -exec mv {} ${OUTPUT_DIR}/output1/ \;
 

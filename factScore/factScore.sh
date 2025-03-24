@@ -21,8 +21,8 @@ fi
 echo "moving output to next step"
 
 
-mv WikiRC_ESO.json ${OUTPUT_DIR}/output6/smryCmp/
-mv factScore.json ${OUTPUT_DIR}/output6/
+mv WikiRC_ESO.json ${OUTPUT_DIR}/output5/smryCmp/
+mv factScore.json ${OUTPUT_DIR}/output5/
 
 #moving only relevant part to next stage
 
